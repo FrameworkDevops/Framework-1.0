@@ -30,4 +30,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 5050
-CMD ["pgadmin4"]
+CMD ["pgAdmin4"]
