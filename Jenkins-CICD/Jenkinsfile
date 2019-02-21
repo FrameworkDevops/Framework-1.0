@@ -6,10 +6,26 @@ stage('Cloning source code')
 }
 stage('Static Code Analysis')
 {
-    sh 'mvn sonar:sonar \
-  -Dsonar.projectKey=Calci \
-  -Dsonar.host.url=http://35.243.131.61:9000 \
-  -Dsonar.login=80f5d121e30c070a9e46c2f4422317938bdd2e3d'
+        def scannerhome = tool 'sonar scanner';
+        withSonarQubeEnv('sonarqube') {
+            sh 'mvn clean package sonar:sonar'
+            sh 'mvn "org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar"'
+            sh 'mvn sonar:sonar \
+  -Dsonar.projectKey=login \
+  -Dsonar.host.url=http://35.244.5.144:9000 \
+  -Dsonar.login=c88ea683811312b597251330f87f14d8acfc946c'
+        }
+}
+stage("Quality Gate") 
+{
+       timeout(time: 1, unit: 'MINUTES') 
+       {
+            def qg = waitForQualityGate()
+            if (qg.status != 'OK') {
+                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                 }
+
+       }
 }
 stage('Build and Test')
 {
