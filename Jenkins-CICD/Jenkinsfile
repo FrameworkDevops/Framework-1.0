@@ -1,0 +1,29 @@
+node {
+
+stage('Cloning source code')
+{
+    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/snehalgaikwad12/FinalCalci.git/']]])
+}
+stage('Static Code Analysis')
+{
+    sh 'mvn sonar:sonar \
+  -Dsonar.projectKey=Calci \
+  -Dsonar.host.url=http://35.243.131.61:9000 \
+  -Dsonar.login=80f5d121e30c070a9e46c2f4422317938bdd2e3d'
+}
+stage('Build and Test')
+{
+     sh 'mvn clean package'
+}
+stage('publish to Nexus')
+{
+   sh 'curl -v -u admin:admin123 --upload-file /bitnami/jenkins/jenkins_home/workspace/Calci/target/Calculator_dev.war http://35.243.131.61:8081/nexus/content/repositories/calci/'
+  
+   
+}
+stage('deploy')
+{ 
+    sh 'curl --upload-file /bitnami/jenkins/jenkins_home/workspace/Calci/target/Calculator_dev.war "http://tomcat:tomcat@35.243.131.61:8090/manager/text/deploy?path=/calci&update=true"'
+}
+ 
+}
