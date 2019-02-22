@@ -9,7 +9,6 @@ stage('Static Code Analysis')
       
         withSonarQubeEnv('SonarScanner') {
             sh 'mvn clean package sonar:sonar'
-            sh 'mvn "org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar"'
             sh 'mvn sonar:sonar \
   -Dsonar.projectKey=login \
   -Dsonar.host.url=http://35.244.5.144:9000 \
